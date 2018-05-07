@@ -1,7 +1,7 @@
 /*global describe, it */
 'use strict';
 var assert = require('assert');
-var parseURLOrFile = require('../parse-url-or-file');
+var parseURLOrFile = require('../src/parse-url-or-file');
 
 describe('parse-url-or-file', function () {
   it('regular HTTP URL', function () {

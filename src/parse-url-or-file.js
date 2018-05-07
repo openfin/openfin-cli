@@ -1,5 +1,5 @@
-var URL_PATTERN = /^\s*(https?|file):\/\//i,
-    ABSOLUTE_PATTERN = /^\s*(\/|[a-z]:[/\\])/i;
+const URL_PATTERN = /^\s*(https?|file):\/\//i;
+const ABSOLUTE_PATTERN = /^\s*(\/|[a-z]:[/\\])/i;
 
 module.exports = function(flag) {
     switch (true) {
