@@ -1,49 +1,49 @@
 {
-  "name": "openfin-cli",
-  "version": "2.0.9",
-  "description": "OpenFin Runtime cli tool",
-  "homepage": "http://www.openfin.co",
-  "author": {
-    "name": "Ricardo de Pena",
-    "email": "ricardo@openfin.co",
-    "url": "http://www.openfin.co"
-  },
-  "engines": {
-    "node": ">=6"
-  },
-  "repository": "openfin/openfin-cli",
-  "license": "Apache-2.0",
-  "files": [
-    "index.js",
-    "cli.js",
-    "parse-url-or-file.js"
-  ],
-  "keywords": [
-    "openfin-cli"
-  ],
-  "dependencies": {
-    "hadouken-js-adapter": "^0.42.1",
-    "meow": "^5.0.0",
-    "openfin-config-builder": "latest",
-    "request": "^2.87.0"
-  },
-  "devDependencies": {
-    "grunt": "^1.0.3",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-nodeunit": "^2.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-jsbeautifier": "^0.2.7",
-    "grunt-mocha-cli": "^4.0.0",
-    "jshint-stylish": "^1.0.0",
-    "load-grunt-tasks": "^4.0.0",
-    "time-grunt": "^1.0.0"
-  },
-  "scripts": {
-    "start": "node cli",
-    "test": "grunt mochacli"
-  },
-  "bin": {
-    "openfin": "cli.js"
-  }
+    "name": "openfin-cli",
+    "version": "2.0.10",
+    "description": "OpenFin Runtime cli tool",
+    "homepage": "http://www.openfin.co",
+    "author": {
+        "name": "Ricardo de Pena",
+        "email": "ricardo@openfin.co",
+        "url": "http://www.openfin.co"
+    },
+    "engines": {
+        "node": ">=6"
+    },
+    "repository": "openfin/openfin-cli",
+    "license": "Apache-2.0",
+    "files": [
+        "index.js",
+        "cli.js",
+        "parse-url-or-file.js"
+    ],
+    "keywords": [
+        "openfin-cli"
+    ],
+    "dependencies": {
+        "hadouken-js-adapter": "^1.43.1",
+        "meow": "^5.0.0",
+        "openfin-config-builder": "latest",
+        "request": "^2.87.0"
+    },
+    "devDependencies": {
+        "grunt": "^1.0.3",
+        "grunt-cli": "^1.2.0",
+        "grunt-contrib-jshint": "^1.1.0",
+        "grunt-contrib-nodeunit": "^2.0.0",
+        "grunt-contrib-watch": "^1.1.0",
+        "grunt-jsbeautifier": "^0.2.7",
+        "grunt-mocha-cli": "^4.0.0",
+        "jshint-stylish": "^1.0.0",
+        "load-grunt-tasks": "^4.0.0",
+        "time-grunt": "^1.0.0"
+    },
+    "scripts": {
+        "start": "node cli",
+        "test": "grunt mochacli"
+    },
+    "bin": {
+        "openfin": "cli.js"
+    }
 }
