@@ -5,6 +5,7 @@ var configBuilder = require('openfin-config-builder'),
     fs = require('fs'),
     request = require('request'),
     parseURLOrFile = require('./parse-url-or-file'),
+    reportUsage = require('./report-usage'),
     meow;
 
 function main(cli) {
@@ -26,7 +27,7 @@ function main(cli) {
 
     try {
         writeToConfig(name, parsedUrl, config, devtools_port, runtime_version, function (configObj) {
-            if (launch) launchOpenfin(config);
+            if (launch) launchOpenfin(config, configObj);
         });
     } catch (err) {
         onError('Failed:', err);
@@ -53,7 +54,8 @@ function onError(message, err) {
 }
 
 //will launch download the rvm and launch openfin
-async function launchOpenfin(config) {
+async function launchOpenfin(config, configObj) {
+    if (process.platform === 'darwin') reportUsage('START', config, configObj);
     try {
         const manifestUrl = isURL(config) ? config : path.resolve(config);
         const port = await launch({ manifestUrl, installerUI: true });
@@ -65,6 +67,7 @@ async function launchOpenfin(config) {
 
         fin.once('disconnected', process.exit);
     } catch (err) {
+        if (process.platform === 'darwin') reportUsage(err, config, configObj);
         console.error(err);
     }
 }

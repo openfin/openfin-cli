@@ -16,7 +16,8 @@
   "files": [
     "index.js",
     "cli.js",
-    "parse-url-or-file.js"
+    "parse-url-or-file.js",
+    "report-usage.js"
   ],
   "keywords": [
     "openfin-cli"
@@ -37,6 +38,7 @@
     "grunt-mocha-cli": "^4.0.0",
     "jshint-stylish": "^1.0.0",
     "load-grunt-tasks": "^4.0.0",
+    "node-machine-id": "^1.1.10",
     "time-grunt": "^1.0.0"
   },
   "scripts": {
