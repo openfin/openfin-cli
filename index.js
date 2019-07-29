@@ -67,7 +67,7 @@ async function launchOpenfin(config, configObj) {
 
         fin.once('disconnected', process.exit);
     } catch (err) {
-        if (process.platform === 'darwin') reportUsage(err, config, configObj);
+        if (process.platform === 'darwin') reportUsage(err.toString(), config, configObj);
         console.error(err);
     }
 }
