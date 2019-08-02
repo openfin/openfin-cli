@@ -14,7 +14,8 @@ module.exports = function(status, config, configObj) {
         manifestUrl: config,
         platform: os.platform().concat('-', os.release()),
         licenseKey: configObj.licenseKey || "contract_identifier",
-        launcherStatus : status || 'SUCCESS'
+        launchMethod: 'openfin-cli',
+        launchStatus : status || 'SUCCESS'
     }
 
     https.get(reportURL.concat(querystring.stringify(queryObj)), (resp) => {
