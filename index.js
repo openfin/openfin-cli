@@ -55,7 +55,7 @@ function onError(message, err) {
 
 //will launch download the rvm and launch openfin
 async function launchOpenfin(config, configObj) {
-    if (process.platform === 'darwin') reportUsage('START', config, configObj);
+    reportUsage('START', config, configObj);
     try {
         const manifestUrl = isURL(config) ? config : path.resolve(config);
         const port = await launch({ manifestUrl, installerUI: true });
@@ -67,7 +67,7 @@ async function launchOpenfin(config, configObj) {
 
         fin.once('disconnected', process.exit);
     } catch (err) {
-        if (process.platform === 'darwin') reportUsage(err.toString(), config, configObj);
+        reportUsage(err.toString(), config, configObj);
         console.error(err);
     }
 }

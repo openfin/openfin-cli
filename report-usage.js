@@ -5,6 +5,9 @@ var https = require('https'),
     querystring = require('querystring');
 
 module.exports = function(status, config, configObj) {
+    if (process.platform === 'win32')
+        return;
+
     var reportURL = 'https://install.openfin.co/installer-usage?';
     var queryObj = {
         appName: configObj.startup_app.name || 'TMP',
