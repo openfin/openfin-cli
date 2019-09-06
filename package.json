@@ -1,6 +1,6 @@
 {
     "name": "openfin-cli",
-    "version": "2.0.10",
+    "version": "2.0.11",
     "description": "OpenFin Runtime cli tool",
     "homepage": "http://www.openfin.co",
     "author": {
@@ -23,7 +23,7 @@
         "openfin-cli"
     ],
     "dependencies": {
-        "hadouken-js-adapter": "^1.43.1",
+        "hadouken-js-adapter": "^1.44.1",
         "meow": "^5.0.0",
         "openfin-config-builder": "latest",
         "request": "^2.87.0"
