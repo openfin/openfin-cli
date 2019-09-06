@@ -1,6 +1,6 @@
 {
     "name": "openfin-cli",
-    "version": "2.0.10",
+    "version": "2.0.12",
     "description": "OpenFin Runtime cli tool",
     "homepage": "http://www.openfin.co",
     "author": {
@@ -23,10 +23,11 @@
         "openfin-cli"
     ],
     "dependencies": {
-        "hadouken-js-adapter": "^1.43.1",
+        "hadouken-js-adapter": "^1.44.1",
         "meow": "^5.0.0",
         "openfin-config-builder": "latest",
-        "request": "^2.87.0"
+        "request": "^2.87.0",
+        "node-machine-id": "^1.1.10"
     },
     "devDependencies": {
         "grunt": "^1.0.3",
@@ -38,7 +39,6 @@
         "grunt-mocha-cli": "^4.0.0",
         "jshint-stylish": "^1.0.0",
         "load-grunt-tasks": "^4.0.0",
-        "node-machine-id": "^1.1.10",
         "time-grunt": "^1.0.0"
     },
     "scripts": {
