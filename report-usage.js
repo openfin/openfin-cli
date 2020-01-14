@@ -19,7 +19,7 @@ module.exports = function(status, config, configObj) {
         licenseKey: configObj.licenseKey || "contract_identifier",
         launchMethod: 'openfin-cli',
         launchStatus : status || 'SUCCESS'
-    }
+    };
 
     https.get(reportURL.concat(querystring.stringify(queryObj)), (resp) => {
         let data = '';
