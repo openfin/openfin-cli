@@ -17,7 +17,8 @@
         "index.js",
         "cli.js",
         "parse-url-or-file.js",
-        "report-usage.js"
+        "report-usage.js",
+        "utils.js"
     ],
     "keywords": [
         "openfin-cli"
