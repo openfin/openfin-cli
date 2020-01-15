@@ -1,8 +1,17 @@
 'use strict';
-var https = require('https'),
-    mid = require('node-machine-id'),
-    os = require('os'),
-    querystring = require('querystring');
+const https = require('https');
+const mid = require('node-machine-id');
+const os = require('os');
+const querystring = require('querystring');
+
+const getAppName = (configObj) => {
+    if (configObj.startup_app) {
+        return configObj.startup_app.name || configObj.startup_app.uuid;
+    } else if (configObj.platform) {
+        return configObj.platform.name || configObj.platform.uuid;
+    }
+    return 'no-app-name-or-uuid';
+};
 
 module.exports = function(status, config, configObj) {
     if (process.platform === 'win32')
@@ -10,7 +19,7 @@ module.exports = function(status, config, configObj) {
 
     var reportURL = 'https://install.openfin.co/installer-usage?';
     var queryObj = {
-        appName: configObj.startup_app.name || 'TMP',
+        appName: getAppName(configObj),
         appLocation: __dirname,
         version: configObj.runtime.version || 'undefined',
         machineId: mid.machineIdSync({original: true}).toUpperCase(),

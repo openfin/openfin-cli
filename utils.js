@@ -1,25 +1,19 @@
-const url = require('url');
+const request = require('request');
 
-function fetch(configUrl) {
-    const proto = (url.parse(configUrl).protocol.slice(0, -1)) === 'http' ? 'http' : 'https';
-    const fetcher = require(proto);
-
+function fetch(url) {
     return new Promise((resolve, reject) => {
-        const request = fetcher.get(configUrl, (response) => {
-            if (response.statusCode < 200 || response.statusCode > 299) {
+        request(url, function (error, response, body) {
+            if (response.statusCode < 200 || response.statusCode > 399) {
                 reject(new Error(`Failed to load url: ${url}, status code:${response.statusCode}`));
             }
-            const body = [];
-            response.on('data', (chunk) => {
-                body.push(chunk);
-            });
-            response.on('end', () => resolve(body.join('')));
-        });
-        request.on('error', (err) => {
-            reject(err);
+
+            if (error) {
+                reject(error);
+            }
+
+            resolve(body);
         });
     });
-
 }
 
 function isURL(str) {
@@ -27,7 +21,7 @@ function isURL(str) {
 }
 
 function getUuid() {
-    return `app-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 }
 
 module.exports = {

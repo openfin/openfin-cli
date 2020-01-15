@@ -21,6 +21,7 @@ async function main(cli) {
         console.log(meow.help);
         return;
     }
+
     try {
         if (url) {
             buildConfig = true;
@@ -66,7 +67,7 @@ async function launchOpenfin(manifestUrl) {
     try {
         const port = await launch({ manifestUrl, installerUI: true });
         const fin = await connect({
-            uuid: getUuid(),
+            uuid: `adapter-connection-${getUuid()}`,
             address: `ws://localhost:${port}`,
             nonPersistent: true,
         });
@@ -80,7 +81,7 @@ async function launchOpenfin(manifestUrl) {
 
 function writeManifest(url, devtoolsPort, runtime) {
     return new Promise((resolve, reject) => {
-        const uuid = getUuid();
+        const uuid = `app-${getUuid()}`;
         const devtools_port = devtoolsPort ? devtoolsPort : 9090;
         const version = runtime ? runtime : "stable"
 
@@ -105,7 +106,7 @@ function writeManifest(url, devtoolsPort, runtime) {
             if (error) {
                 reject(error);
             } else {
-                console.info(`Manifest written to: ${filepath}`);
+                console.info(`Manifest written to: ${path.resolve(filepath)}`);
                 resolve({ filepath, manifest });
             }
         });
