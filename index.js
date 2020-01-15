@@ -6,13 +6,14 @@ const reportUsage = require('./report-usage');
 const { getUuid, fetch, isURL } = require('./utils');
 const os = require('os');
 
-async function main(cli) {
+const main = async (cli) => {
     const meow = cli;
     const flags = cli.flags;
     const url = flags.u || flags.url;
     const launch = flags.l || flags.launch;
     const devtoolsPort = flags.p || flags.devtoolsPort || null;
     const runtime = flags.r || flags.runtime;
+    const isPlatform = flags.t || flags.platform;
     let manifestUrl = flags.c || flags.config || null;
     let buildConfig;
     let configObj;
@@ -25,7 +26,7 @@ async function main(cli) {
     try {
         if (url) {
             buildConfig = true;
-            const manifestInfo = await writeManifest(url, devtoolsPort, runtime);
+            const manifestInfo = await writeManifest(url, devtoolsPort, runtime, isPlatform);
             manifestUrl = manifestInfo.filepath;
             configObj = manifestInfo.manifest;
         }
@@ -53,7 +54,7 @@ async function main(cli) {
 }
 
 //makeshift is object empty function
-function isEmpty(flags) {
+const isEmpty = (flags) => {
     for (var key in flags) {
         if (flags.hasOwnProperty(key) && flags[key] !== false) {
             return false;
@@ -63,7 +64,7 @@ function isEmpty(flags) {
 }
 
 //will launch download the rvm and launch openfin
-async function launchOpenfin(manifestUrl) {
+const launchOpenfin = async (manifestUrl) => {
     try {
         const port = await launch({ manifestUrl, installerUI: true });
         const fin = await connect({
@@ -79,25 +80,82 @@ async function launchOpenfin(manifestUrl) {
     }
 }
 
-function writeManifest(url, devtoolsPort, runtime) {
+function writeManifest(url, devtoolsPort, runtime, isPlatform) {
     return new Promise((resolve, reject) => {
         const uuid = `app-${getUuid()}`;
         const devtools_port = devtoolsPort ? devtoolsPort : 9090;
         const version = runtime ? runtime : "stable"
+        const parsedUrls = url.split(',');
+        let manifest;
 
-        const manifest = {
-            devtools_port,
-            startup_app: {
-                name: uuid,
-                url,
-                uuid,
-                saveWindowState: false,
-                autoShow: true
-            },
-            runtime: {
-                version
+        const generateViewObj = () => ({
+            type: "component",
+            componentName: "view",
+            componentState: {
+                name: `view-${getUuid()}`,
+                url: ''
+            }
+        });
+
+        const buildContent = () => {
+            const content = [];
+            parsedUrls.forEach((url) => {
+                const viewObj = generateViewObj();
+                viewObj.componentState.url = url;
+                content.push(viewObj);
+            });
+
+            return content;
+        }
+
+        if (isPlatform) {
+            const content = buildContent();
+
+            manifest = {
+                runtime: {
+                    version
+                },
+                platform: {
+                    uuid,
+                    autoShow: false
+                },
+                snapshot: {
+                    windows: [
+                        {
+                            saveWindowState: false,
+                            backgroundThrottling: true,
+                            layout: {
+                                content: [
+                                    {
+                                        type: 'row',
+                                        id: 'no-drop-target',
+                                        content
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        } else {
+            manifest = {
+                devtools_port,
+                startup_app: {
+                    name: uuid,
+                    url: parsedUrls[0],
+                    uuid,
+                    saveWindowState: false,
+                    autoShow: true
+                },
+                runtime: {
+                    version
+                }
             }
         }
+
+
+
+
 
         const manifestJson = JSON.stringify(manifest);
         const filepath = path.join(os.tmpdir(), `${uuid}.json`);

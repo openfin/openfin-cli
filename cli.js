@@ -10,7 +10,8 @@ const options = {
         config: { alias: 'c', type: 'string' },
         launch: { alias: 'l', type: 'boolean' },
         devtoolsPort: { alias: 'p', type: 'integer' },
-        runtime: { alias: 'r', type: 'string' }
+        runtime: { alias: 'r', type: 'string' },
+        platform: { alias: 't', type: 'boolean' }
     }
 };
 
