@@ -52,6 +52,11 @@ $ openfin -l -c myconfig.json
 $ openfin -l -c http://goo.gl/w2747v
 ```
 
+#### Launching URLs into an OpenFin Platform
+```
+$ openfin -launch -platform -url https://openfin.co,http://cdn.openfin.co/demos/hyperblotter/index.html,https://google.com
+```
+
 ```
 ## License
 
