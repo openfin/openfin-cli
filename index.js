@@ -1,45 +1,60 @@
 'use strict';
-var configBuilder = require('openfin-config-builder'),
-    { launch, connect } = require('hadouken-js-adapter'),
-    path = require('path'),
-    fs = require('fs'),
-    request = require('request'),
-    parseURLOrFile = require('./parse-url-or-file'),
-    reportUsage = require('./report-usage'),
-    meow;
+const { launch, connect } = require('hadouken-js-adapter');
+const path = require('path');
+const fs = require('fs');
+const reportUsage = require('./report-usage');
+const { getUuid, fetch, isURL } = require('./utils');
+const os = require('os');
 
-function main(cli) {
-    meow = cli;
-
-    var flags = cli.flags,
-        name = flags.n || flags.name,
-        url = flags.u || flags.url,
-        config = flags.c || flags.config || 'app.json',
-        launch = flags.l || flags.launch,
-        devtools_port = flags.p || flags.devtoolsPort,
-        runtime_version = flags.v || flags.runtimeVersion,
-        parsedUrl = url ? parseURLOrFile(url) : url;
+const main = async (cli) => {
+    const meow = cli;
+    const flags = cli.flags;
+    const url = flags.u || flags.url;
+    const launch = flags.l || flags.launch;
+    const devtoolsPort = flags.p || flags.devtoolsPort || null;
+    const runtime = flags.r || flags.runtime;
+    const isPlatform = flags.t || flags.platform;
+    let manifestUrl = flags.c || flags.config || null;
+    let buildConfig;
+    let configObj;
 
     if (isEmpty(flags)) {
-        console.log(cli.help);
+        console.log(meow.help);
         return;
     }
 
     try {
-        writeToConfig(name, parsedUrl, config, devtools_port, runtime_version, function (configObj) {
-            if (launch) launchOpenfin(config, configObj);
-        });
-    } catch (err) {
-        onError('Failed:', err);
+        if (url) {
+            buildConfig = true;
+            const manifestInfo = await writeManifest(url, devtoolsPort, runtime, isPlatform);
+            manifestUrl = manifestInfo.filepath;
+            configObj = manifestInfo.manifest;
+        }
+
+        if (launch) {
+            if (!buildConfig) {
+                if (isURL(manifestUrl)) {
+                    const config = await fetch(manifestUrl);
+                    configObj = JSON.parse(config);
+                } else {
+                    manifestUrl = path.resolve(manifestUrl);
+                    const config = fs.readFileSync(manifestUrl);
+                    configObj = JSON.parse(config);
+                }
+            }
+
+            reportUsage('START', manifestUrl, configObj);
+            launchOpenfin(manifestUrl);
+        }
+    }
+    catch (error) {
+        console.log(`Failed: ${error}`);
+        console.log(meow.help);
     }
 }
 
-function isURL(str) {
-    return (typeof str === 'string') && str.lastIndexOf('http') >= 0;
-}
-
 //makeshift is object empty function
-function isEmpty(flags) {
+const isEmpty = (flags) => {
     for (var key in flags) {
         if (flags.hasOwnProperty(key) && flags[key] !== false) {
             return false;
@@ -48,19 +63,12 @@ function isEmpty(flags) {
     return true;
 }
 
-function onError(message, err) {
-    console.log(message, err);
-    console.log(meow.help);
-}
-
 //will launch download the rvm and launch openfin
-async function launchOpenfin(config, configObj) {
-    reportUsage('START', config, configObj);
+const launchOpenfin = async (manifestUrl) => {
     try {
-        const manifestUrl = isURL(config) ? config : path.resolve(config);
         const port = await launch({ manifestUrl, installerUI: true });
         const fin = await connect({
-            uuid: 'openfin-cli-server-connection',
+            uuid: `adapter-connection-${getUuid()}`,
             address: `ws://localhost:${port}`,
             nonPersistent: true,
         });
@@ -72,69 +80,95 @@ async function launchOpenfin(config, configObj) {
     }
 }
 
-//write the specified config to disk.
-function writeToConfig(name, url, config, devtools_port, runtime_version, callback) {
-    if (isURL(config)) {
-        request(config, function (err, response, body) {
-            if (!err && response.statusCode === 200) {
-                callback(JSON.parse(body));
+function writeManifest(url, devtoolsPort, runtime, isPlatform) {
+    return new Promise((resolve, reject) => {
+        const uuid = `app-${getUuid()}`;
+        const devtools_port = devtoolsPort ? devtoolsPort : 9090;
+        const version = runtime ? runtime : "stable"
+        const parsedUrls = url.split(',');
+        let manifest;
+
+        const generateViewObj = () => ({
+            type: "component",
+            componentName: "view",
+            componentState: {
+                name: `view-${getUuid()}`,
+                url: ''
             }
         });
-        return;
-    }
 
-    var shortcut = {},
-        startup_app = {},
-        runtime = {},
-        configAction,
-        actionMessage;
+        const buildContent = () => {
+            const content = [];
+            parsedUrls.forEach((url) => {
+                const viewObj = generateViewObj();
+                viewObj.componentState.url = url;
+                content.push(viewObj);
+            });
 
-    fs.exists(config, function (exists) {
-        if (exists) {
-            configAction = configBuilder.update;
-            actionMessage = 'using config';
+            return content;
+        }
+
+        if (isPlatform) {
+            const content = buildContent();
+
+            manifest = {
+                runtime: {
+                    version
+                },
+                platform: {
+                    uuid,
+                    autoShow: false
+                },
+                snapshot: {
+                    windows: [
+                        {
+                            saveWindowState: false,
+                            backgroundThrottling: true,
+                            layout: {
+                                content: [
+                                    {
+                                        type: 'row',
+                                        id: 'no-drop-target',
+                                        content
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
         } else {
-            configAction = configBuilder.create;
-            actionMessage = 'successfully created config';
-        }
-        if (config) {
-            if (name) {
-                startup_app.name = name;
-                shortcut.name = name;
-                shortcut.company = name;
-                shortcut.description = name;
-            }
-            if (url) {
-                startup_app.url = url;
-            }
-
-            if (runtime_version) {
-                runtime.version = runtime_version;
+            manifest = {
+                devtools_port,
+                startup_app: {
+                    name: uuid,
+                    url: parsedUrls[0],
+                    uuid,
+                    saveWindowState: false,
+                    autoShow: true
+                },
+                runtime: {
+                    version
+                }
             }
         }
 
-        var appConfigObj = {
-            startup_app: url ? startup_app : null,
-            shortcut: shortcut
-        };
 
-        if (devtools_port) {
-            appConfigObj.devtools_port = devtools_port;
-        }
 
-        if (runtime_version) {
-            appConfigObj.runtime = runtime;
-        }
 
-        //create or update the config
-        configAction(appConfigObj, config).catch(function (err) {
-            console.log(err);
-        }).then(function (configObj) {
-            console.log(actionMessage, path.resolve(config));
-            callback(configObj);
+
+        const manifestJson = JSON.stringify(manifest);
+        const filepath = path.join(os.tmpdir(), `${uuid}.json`);
+
+        fs.writeFile(filepath, manifestJson, (error) => {
+            if (error) {
+                reject(error);
+            } else {
+                console.info(`Manifest written to: ${path.resolve(filepath)}`);
+                resolve({ filepath, manifest });
+            }
         });
     });
 }
-
 
 module.exports = main;
