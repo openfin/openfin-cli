@@ -39,6 +39,19 @@ Shorthand
 ```sh
 $ openfin -l -u http://www.openfin.co
 ```
+
+#### Launch application and save manifest to the working directory
+
+```sh
+$ openfin --launch --url http://www.openfin.co --save myconfig.json
+```
+
+Shorthand
+```sh
+$ openfin -l -u http://www.openfin.co -s myconfig.json
+```
+
+
 #### Launching a given config file
 
 ```sh
@@ -54,7 +67,7 @@ $ openfin -l -c http://goo.gl/w2747v
 
 #### Launching URLs into an OpenFin Platform
 ```
-$ openfin -launch -platform -url https://openfin.co,http://cdn.openfin.co/demos/hyperblotter/index.html,https://google.com
+$ openfin --launch --platform --url https://openfin.co,http://cdn.openfin.co/demos/hyperblotter/index.html,https://google.com
 ```
 
 ```

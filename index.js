@@ -14,6 +14,7 @@ const main = async (cli) => {
     const devtoolsPort = flags.p || flags.devtoolsPort || null;
     const runtime = flags.r || flags.runtime;
     const isPlatform = flags.t || flags.platform;
+    const manifestName = flags.s || flags.save
     let manifestUrl = flags.c || flags.config || null;
     let buildConfig;
     let configObj;
@@ -26,7 +27,7 @@ const main = async (cli) => {
     try {
         if (url) {
             buildConfig = true;
-            const manifestInfo = await writeManifest(url, devtoolsPort, runtime, isPlatform);
+            const manifestInfo = await writeManifest(url, devtoolsPort, runtime, isPlatform, manifestName);
             manifestUrl = manifestInfo.filepath;
             configObj = manifestInfo.manifest;
         }
@@ -80,7 +81,7 @@ const launchOpenfin = async (manifestUrl) => {
     }
 }
 
-function writeManifest(url, devtoolsPort, runtime, isPlatform) {
+function writeManifest(url, devtoolsPort, runtime, isPlatform, manifestName) {
     return new Promise((resolve, reject) => {
         const uuid = `app-${getUuid()}`;
         const devtools_port = devtoolsPort ? devtoolsPort : 9090;
@@ -153,12 +154,14 @@ function writeManifest(url, devtoolsPort, runtime, isPlatform) {
             }
         }
 
+        const manifestJson = JSON.stringify(manifest, null, 4);
+        let filepath;
 
-
-
-
-        const manifestJson = JSON.stringify(manifest);
-        const filepath = path.join(os.tmpdir(), `${uuid}.json`);
+        if (manifestName) {
+            filepath = path.join(process.cwd(), manifestName);
+        } else {
+            filepath = path.join(os.tmpdir(), `${uuid}.json`);
+        }
 
         fs.writeFile(filepath, manifestJson, (error) => {
             if (error) {
