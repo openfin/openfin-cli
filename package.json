@@ -1,6 +1,6 @@
 {
     "name": "openfin-cli",
-    "version": "3.0.1-beta.2",
+    "version": "3.0.2-beta.1",
     "description": "OpenFin Runtime cli tool",
     "homepage": "http://www.openfin.co",
     "author": {

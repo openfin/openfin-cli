@@ -11,7 +11,8 @@ const options = {
         launch: { alias: 'l', type: 'boolean' },
         devtoolsPort: { alias: 'p', type: 'integer' },
         runtime: { alias: 'r', type: 'string' },
-        platform: { alias: 't', type: 'boolean' }
+        platform: { alias: 't', type: 'boolean' },
+        save: { alias: 's', type: 'string' }
     }
 };
 
@@ -19,11 +20,12 @@ const cli = meow({
     help: [
         'OpenFin cli is capable of launching Application, and creating OpenFin config files.',
         'Options:',
-        '-c --config <config file>',
+        '-c --config <path to config file>',
         '-u --url <application url>',
         '-l --launch launch this configuration',
         '-p --devtools-port devtools port number',
         '-r --runtime-version runtime version',
+        '-s --save the manifest to the current directory <manifest name>',
         '--version current version of the tool',
         'Example',
         '  openfin -l -c myconfig.json -u http://www.openfin.co'
