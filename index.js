@@ -36,7 +36,7 @@ const main = async (cli) => {
             if (!buildConfig) {
                 if (isURL(manifestUrl)) {
                     const config = await fetch(manifestUrl);
-                    configObj = JSON.parse(config);
+                    configObj = config;
                 } else {
                     manifestUrl = path.resolve(manifestUrl);
                     const config = fs.readFileSync(manifestUrl);
@@ -81,11 +81,11 @@ const launchOpenfin = async (manifestUrl) => {
     }
 }
 
-function writeManifest(url, devtoolsPort, runtime, isPlatform, manifestName) {
+const  writeManifest = (url, devtoolsPort, runtime, isPlatform, manifestName) => {
     return new Promise((resolve, reject) => {
         const uuid = `app-${getUuid()}`;
         const devtools_port = devtoolsPort ? devtoolsPort : 9090;
-        const version = runtime ? runtime : "stable"
+        const version = runtime ? runtime : 'stable';
         const parsedUrls = url.split(',');
         let manifest;
 
