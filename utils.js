@@ -1,26 +1,20 @@
-const request = require('request');
+const axios = require('axios');
 
-function fetch(url) {
-    return new Promise((resolve, reject) => {
-        request(url, function (error, response, body) {
-            if (response.statusCode < 200 || response.statusCode > 399) {
-                reject(new Error(`Failed to load url: ${url}, status code:${response.statusCode}`));
-            }
+const fetch = async (url) => {
+    const response = await axios.get(url);
 
-            if (error) {
-                reject(error);
-            }
-
-            resolve(body);
-        });
-    });
+    if (response.status < 200 || response.status > 399) {
+        throw new Error(`Failed to load url: ${url}, status code:${response.status}`);
+    } else {
+        return response.data;
+    }
 }
 
-function isURL(str) {
+const isURL = (str) => {
     return (typeof str === 'string') && str.lastIndexOf('http') >= 0;
 }
 
-function getUuid() {
+const getUuid = () => {
     return `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 }
 

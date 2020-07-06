@@ -13,15 +13,6 @@ const getAppName = (configObj) => {
     return 'no-app-name-or-uuid';
 };
 
-const getAppName = (configObj) => {
-    if (configObj.startup_app) {
-        return configObj.startup_app.name || configObj.startup_app.uuid;
-    } else if (configObj.platform) {
-        return configObj.platform.name || configObj.platform.uuid;
-    }
-    return 'no-app-name-or-uuid';
-};
-
 module.exports = function(status, config, configObj) {
     if (process.platform === 'win32')
         return;
