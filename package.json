@@ -26,7 +26,7 @@
         "axios": "^0.21.1",
         "meow": "^7.1.1",
         "node-machine-id": "^1.1.12",
-        "openfin-adapter": "^19.59.24"
+        "openfin-adapter": "^19.61.6"
     },
     "devDependencies": {
         "grunt": "^1.4.0",
